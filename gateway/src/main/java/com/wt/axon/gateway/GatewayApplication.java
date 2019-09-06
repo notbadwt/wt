@@ -10,11 +10,15 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@RestController
 public class GatewayApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GatewayApplication.class);
@@ -26,11 +30,17 @@ public class GatewayApplication {
         this.commandGateway = commandGateway;
     }
 
-    @PostConstruct
-    public void init() {
-        commandGateway.send(new CreateUserCommand(1L));
-        LOGGER.info("send end");
+//    @PostConstruct
+//    public void init() {
+//        commandGateway.send(new CreateUserCommand(1L));
+//        LOGGER.info("send end");
+//    }
 
+    @RequestMapping({"/test"})
+    public Mono<String> testController() {
+        commandGateway.sendAndWait(new CreateUserCommand(2L));
+        LOGGER.info("send end");
+        return Mono.just("");
     }
 
     public static void main(String[] args) {
